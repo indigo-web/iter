@@ -8,7 +8,7 @@ type filter[T any] struct {
 	stopped bool
 }
 
-func Filter[T any](iter Iterator[T], fun FilterFunc[T]) Iterator[T] {
+func Filter[T any](fun FilterFunc[T], iter Iterator[T]) Iterator[T] {
 	return filter[T]{
 		iter: iter,
 		fun:  fun,
@@ -16,10 +16,6 @@ func Filter[T any](iter Iterator[T], fun FilterFunc[T]) Iterator[T] {
 }
 
 func (f filter[T]) Next() (el T, cont bool) {
-	for f.Stopped() {
-		return el, false
-	}
-
 	for {
 		el, cont = f.iter.Next()
 		if !cont {

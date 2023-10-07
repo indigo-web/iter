@@ -8,10 +8,10 @@ import (
 func TestFilter(t *testing.T) {
 	t.Run("pass all", func(t *testing.T) {
 		iter := Filter(
-			Slice([]string{"i", "don't want", "want", "pizza"}),
 			func(el string) bool {
 				return el != "don't want"
 			},
+			Slice([]string{"i", "don't want", "want", "pizza"}),
 		)
 		want := []string{"i", "want", "pizza"}
 
@@ -29,12 +29,12 @@ func TestFilter(t *testing.T) {
 
 	t.Run("fail all", func(t *testing.T) {
 		iter := Filter(
-			Slice([]string{"i", "don't want", "want", "pizza"}),
 			func(el string) bool {
 				return false
 			},
+			Slice([]string{"i", "don't want", "want", "pizza"}),
 		)
-		
+
 		_, cont := iter.Next()
 		require.False(t, cont)
 	})

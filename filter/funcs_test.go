@@ -9,7 +9,7 @@ import (
 func TestUnique(t *testing.T) {
 	data := []string{"hello", "world", "hello", "alex", "world"}
 	want := []string{"hello", "world", "alex"}
-	it := iter.Filter(iter.Slice(data), Unique(make([]string, 0, 5)))
+	it := iter.Filter(Unique(make([]string, 0, 5)), iter.Slice(data))
 
 	for i := 0; ; i++ {
 		str, cont := it.Next()

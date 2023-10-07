@@ -8,7 +8,7 @@ type mapIterator[A, B any] struct {
 	stopped bool
 }
 
-func Map[A, B any](iter Iterator[A], mapFunc MapFunc[A, B]) Iterator[B] {
+func Map[A, B any](mapFunc MapFunc[A, B], iter Iterator[A]) Iterator[B] {
 	return mapIterator[A, B]{
 		iter: iter,
 		fun:  mapFunc,
