@@ -28,7 +28,7 @@ iter.Slice[T](mySlice)
 ```
 ...where T is a type of the slice. For example:
 ```go
-iter.Slice[byte]([]byte("Hello, world!"))
+iter.Slice([]byte("Hello, world!")) // generic type inferred automatically
 ```
 
 ### Extract
@@ -40,10 +40,10 @@ For example, let's convert a slice of strings into a slice of integers:
 ```go
 myStrings := []string{"123", "456"}
 sliceIterator := iter.Slice[string](myStrings)
-ints := iter.Map[string, int](sliceIterator, func(from string) (to int) {
+ints := iter.Map[string, int](func(from string) (to int) {
   to, _ = strconv.Atoi(from)
   return to
-})
+}, sliceIterator)
 
 fmt.Println(iter.Extract(ints, nil))
 // Output: [123 456]
@@ -53,16 +53,28 @@ fmt.Println(iter.Extract(ints, nil))
 Filter just skips values, if a filter function says "no". For example:
 ```go
 integers := []int{1, 2, 3, 4, 5}
-filtered := iter.Filter[int](iter.Slice(integers), func(integer int) bool {
+filtered := iter.Filter[int](func(integer int) bool {
   return integer != 3
-})
+}, iter.Slice(integers))
 
 fmt.Println(iter.Extract(filtered, nil))
 // Output: 1, 2, 4, 5
 ```
 
+### Reduce
+Reduce produces a single value of a sequence. It iterates over the iterator and passes both previous and current values into the reducing function. For example:
+```go
+integers := []int{1, 2, 3, 4, 5}
+sum := iter.Reduce[int](func(a, b int) int {
+  return a + b
+}, iter.Slice(integers))
+
+fmt.Println(sum)
+// Output: 15
+```
+
 There are also some pre-defined filter functions in iter/filter package:
-- Unique - is a HoF. It takes a buffer, which will store all the unique values, and returns a `FilterFunc[T]`, that can be used as a filter function. It is approximately O(n^2) (may be wrong), but as project is mainly used by indigo, there it appears to be cheaper than a built-in hashmap
+- Unique - is a HoF. It takes a buffer, which will store all the unique values, and returns a `FilterFunc[T]`, that can be used as a filter function. It is approximately O(n^2) (may be wrong), but as project is mainly used by indigo, there it appears to be cheaper than a built-in hashmap (up to 10-20 unique elements, that is enough)
 
 # Post-scriptum
-The package doesn't support maps yet, as implementation of it won't be that smooth (it isn't possible in a normal way to make a lazy iterating over a map). Also, there's no a third brother-of-three from functional programming - Reduce. There're actually a lot of things, that I would do in terms of design and API of the library, but I've got other projects at the moment I'd like to maintain. But you always can open an issue or pull-request, and I'll respond to it
+The package doesn't support maps yet, as implementation of it won't be that smooth (it isn't possible in a normal way to make a lazy iterating over a map). There're actually a lot of things that I would do in terms of design and API of the library, so be free to open PRs - I'm gonna review them all🎉
